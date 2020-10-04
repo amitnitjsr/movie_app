@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import axiosInstance from "./index";
 import { NotificationManager } from 'react-notifications';
 const isHandlerEnabled = (config = {}) => {
