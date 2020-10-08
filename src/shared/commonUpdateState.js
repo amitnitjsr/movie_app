@@ -1,6 +1,6 @@
 import { updateObject } from "./helpers";
 export const setItems = (state, data, name) => {
-
+    console.log('commonupdatestate', data.data, data)
     let updateStateName = `${name.toLowerCase()}List`;  // roleList,userList
     return updateObject(state, {
         [updateStateName]: data.data || [],

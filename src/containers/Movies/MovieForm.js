@@ -21,7 +21,7 @@ function MovieForm(props) {
   const initialFields = {
     name: "",
     director: "",
-    genre: '',
+    genre: [],
     popularity: null,
     imdb_score: null,
     poster: null
@@ -33,23 +33,78 @@ function MovieForm(props) {
 
   useEffect(() => {
     setmovieId(params.movieId)
-    if (params.movieId) props.crudActionCall(`${MOVIES_URL}/${params.movieId}`, null, "GET")
+    if (params.movieId) {
+      props.crudActionCall(`${MOVIES_URL}/${params.movieId}`, null, "GET")
+    }
   }, [params]);
 
   useEffect(() => {
-    const action = props.movie.action;
-    if (props.movie.movie && params.movieId) {
-      setFields({ ...fields, ...props.movie.movie })
-    }
 
+    const action = props.movies.action;
+
+    if (props.movies.movies && params.movieId) {
+      setFields({ ...fields, ...props.movies.movies[0] });
+    }
     if (action.isSuccess && action.type === "ADD" || action.type === "UPDATE")
       props.history.push("/movies/list")
 
-  }, [props.movie]);
+  }, [props.movies]);
 
   const onSubmit = (data) => {
+    debugger
     if (movieId) data.movieId = movieId;
-    props.crudActionCall(MOVIES_URL, data, movieId ? "UPDATE" : "ADD")
+    if (data.poster[0]) {
+      var img = document.querySelector('img');  // $('img')[0]
+      img.src = URL.createObjectURL(data.poster[0]); // set src to blob url
+      // this.setState({ uploadedImage: img.src })
+      data.poster = img.src;
+      console.log('data', img.src);
+
+    }
+    console.log('data', data.poster[0]);
+
+
+    if (data.poster[0]) {
+      let reader = new FileReader();
+      reader.onload = function (ev) {
+        // this.setState({ imageURI: ev.target.result });
+        console.log('imageURI', ev.target.result);
+      }.bind(this);
+      reader.readAsDataURL(data.poster[0]);
+    }
+
+
+    if (movieId) {
+      let tmp = data.genre;
+      data.genre = tmp.split(',');
+      data.modified_on = new Date();
+      data.modified_by = ''
+      props.crudActionCall(MOVIES_URL + `/${movieId}`, data, movieId ? "UPDATE" : "ADD");
+    }
+    else {
+      let tmp = data.genre;
+      data.genre = tmp.split(',');
+      data.created_on = new Date();
+      data.created_by = 'Admin'
+      props.crudActionCall(MOVIES_URL, data, movieId ? "UPDATE" : "ADD");
+    }
+    props.resetAction();
+    // props.crudActionCall(MOVIES_URL, data, movieId ? "UPDATE" : "ADD")
+  }
+
+  const readURI = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      let reader = new FileReader();
+      reader.onload = function (ev) {
+        console.log('url', ev.target.result)
+        this.setState({ imageURI: ev.target.result });
+      }.bind(this);
+      reader.readAsDataURL(e.target.files[0]);
+    }
+  }
+
+  const handleChange = (e) => {
+    readURI(e); // maybe call this with webworker or async library?
   }
 
   return (
@@ -75,7 +130,7 @@ function MovieForm(props) {
                 {/* Director Name */}
                 <InputUI
                   label="Director Name"
-                  name="email"
+                  name="director"
                   errors={errors}
                   innerRef={register({
                     required: 'This is required field',
@@ -108,7 +163,7 @@ function MovieForm(props) {
                 />
                 <InputUI
                   label="imdb_score"
-                  name="dateOfBirth"
+                  name="imdb_score"
                   type="number"
                   errors={errors}
                   innerRef={register({
@@ -125,6 +180,7 @@ function MovieForm(props) {
                   register={register}
                   errors={errors}
                   required={false}
+
                 />
 
               </CardBody>
@@ -139,9 +195,9 @@ function MovieForm(props) {
   );
 }
 const mapStateToProps = state => {
-  const { movie } = state;
+  const { movies } = state;
   return {
-    movie
+    movies
   }
 }
 const mapDispatchToProps = dispatch => {

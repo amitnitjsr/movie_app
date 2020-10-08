@@ -1,4 +1,4 @@
-export const apiBaseUrl = `http://localhost:3002/movies`;
+export const apiBaseUrl = `http://localhost:3002`;
 export const updateObject = (oldObj, newObj) => {
     console.log({ ...oldObj, ...newObj })
     return { ...oldObj, ...newObj };

@@ -1,7 +1,7 @@
 import { setItemAction, resetItemAction } from '../../shared/commonUpdateState';
 const initialState = {
-    movie: null,
-    movieList: [],
+    movies: null,
+    moviesList: [],
     action: {
         type: null,
         isSuccess: false,

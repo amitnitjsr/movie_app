@@ -23,7 +23,7 @@ function MovieDetails(props) {
     }
   }, []);
 
-  const userData = props.movie.movie;
+  const userData = props.movies.movies;
 
   return (
     <div classNam="animated fadeIn">
@@ -96,9 +96,9 @@ function MovieDetails(props) {
   )
 }
 const mapStateToProps = state => {
-  const { movie } = state;
+  const { movies } = state;
   return {
-    movie
+    movies
   }
 }
 const mapDispatchToProps = dispatch => {
